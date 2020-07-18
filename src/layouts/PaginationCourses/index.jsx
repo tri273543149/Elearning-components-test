@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import "./index.css";
 import { connect } from "react-redux";
 import CourseItem from "../../components/CourseItem";
 import PaginationComponent from "../../components/Pagination";
@@ -13,13 +14,25 @@ class PaginationCourses extends Component {
     };
   }
   onChangePage = (page) => {
-    this.setState({
-      page
-    });
+    this.setState(
+      {
+        page,
+      },
+      () => {
+        console.log(this.state.page);
+      }
+    );
   };
   componentDidMount = () => {
     let { page, pageSize } = this.state;
     this.props.dispatch(fetchCoursesPagination(page, pageSize, "GP01"));
+  };
+  componentDidUpdate = (prevProps, prevState) => {
+    if (prevState.page !== this.state.page) {
+      prevProps.dispatch(
+        fetchCoursesPagination(this.state.page, this.state.pageSize, "GP01")
+      );
+    }
   };
   render() {
     return (
@@ -31,8 +44,15 @@ class PaginationCourses extends Component {
             </div>
           ))}
         </div>
-        <div className="my-3">
-          <PaginationComponent onChangePage={this.onChangePage} pageSize={this.state.pageSize} />
+        <div className="row my-3">
+          <div className="col-12">
+            <div className="mx-auto" style={{width: "140px"}}>
+              <PaginationComponent
+                onChangePage={this.onChangePage}
+                totalPages={this.props.totalPages}
+              />
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -41,4 +61,5 @@ class PaginationCourses extends Component {
 
 export default connect((state) => ({
   coursePagination: state.courseList.coursePagination.items || [],
+  totalPages: state.courseList.coursePagination.totalPages
 }))(PaginationCourses);

@@ -1,34 +1,41 @@
-import React from "react";
+import React, { useState } from "react";
+import "./index.css";
 import { Pagination, PaginationItem, PaginationLink } from "reactstrap";
 
-const PaginationComponent = ({ onChangePage, pageSize }) => {
+const PaginationComponent = ({ onChangePage, totalPages }) => {
+  const [activeItem, setActiveItem] = useState(1);
+
   const handelOnChangePage = (page) => {
     onChangePage(page);
+    if(activeItem !== page){
+      setActiveItem(page);
+    }
   };
   const renderPageNumber = () => {
-    console.log(pageSize);
-    for (let i = 1; i <= pageSize; i++) {
-      return (
-        <PaginationItem>
+    let temptArr = [];
+
+    for (let i = 1; i <= totalPages; i++) {
+      let paginationTemplate = (
+        <PaginationItem
+          active={activeItem === i ? true : false}
+          key={i}
+          onClick={() => handelOnChangePage(i)}
+        >
           <PaginationLink>{i}</PaginationLink>
         </PaginationItem>
       );
+      temptArr = [...temptArr, paginationTemplate];
     }
+    return temptArr;
   };
   return (
     <Pagination>
-      <PaginationItem>
-        <PaginationLink first onClick={() => handelOnChangePage(1)} />
-      </PaginationItem>
-      <PaginationItem>
-        <PaginationLink previous href="#" />
+      <PaginationItem onClick={() => handelOnChangePage(1)}>
+        <PaginationLink first />
       </PaginationItem>
       {renderPageNumber()}
-      <PaginationItem>
-        <PaginationLink next href="#" />
-      </PaginationItem>
-      <PaginationItem>
-        <PaginationLink last href="#" />
+      <PaginationItem onClick={() => handelOnChangePage(totalPages)}>
+        <PaginationLink last />
       </PaginationItem>
     </Pagination>
   );
